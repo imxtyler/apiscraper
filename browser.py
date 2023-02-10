@@ -17,7 +17,9 @@ class Browser:
         os.environ["webdriver.chrome.driver"] = chromedriverPath
         url = urlparse (self.proxy.proxy).path
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--proxy-server={0}".format(url))
+        #chrome_options.add_argument('--headless')
+        #chrome_options.add_argument('--disable-gpu')
+        #chrome_options.add_argument("--proxy-server={0}".format(url))
         
         self.driver = webdriver.Chrome(chromedriverPath,chrome_options =chrome_options)
         if cookies:
@@ -29,6 +31,7 @@ class Browser:
 
     def get(self, url, timeout=20):
         self.proxy.new_har(url, {"captureContent":True})
+        self.server.stop() # Add by Tyler, for opening the url page successfully!
         try:
             self.driver.set_page_load_timeout(timeout)
             self.driver.get(url)
@@ -42,6 +45,8 @@ class Browser:
             time.sleep(2) #wait for the page to load
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(4) #wait for the page to load
+            #self.driver.execute_script("window.scrollTo(0, 9999999999999999);")
+            #time.sleep(9) #wait for the page to load
         except TimeoutException:
             print("Timeout")
             self.driver.find_element_by_tag_name("body").send_keys(Keys.CONTROL+Keys.ESCAPE)
@@ -58,7 +63,8 @@ class Browser:
 
     def close(self):
         try:
-            self.server.stop()
+            # self.server.stop()
+            pass
         except Exception:
             print("Warning: Error stopping server")
             pass
