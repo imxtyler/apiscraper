@@ -68,12 +68,12 @@ class APIFinder:
 		if url.startswith("http://") or url.startswith("https://"):
 			return url
 		if self.getDomain(baseUrl) == self.getDomain(url):
-			return self.getUrlScheme(baseUrl)+"://"+url.lstrip("/")
+			return self.getUrlScheme(baseUrl)+"://"+url.lstrip(" ").lstrip("/")
 		if self.getDomain(baseUrl) != self.getDomain(url):
 			if url.startswith("/"):
 				return baseUrl+"/"+url.lstrip("/")
 			else:
-				return self.getUrlScheme(baseUrl)+"://"+url
+				return self.getUrlScheme(baseUrl)+"://"+url.lstrip(" ").lstrip("/")
 		return None
 
 
