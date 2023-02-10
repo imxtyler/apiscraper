@@ -32,7 +32,7 @@ class APIFinder:
 		if self.url:
 			os.makedirs(self.harDirectory,exist_ok=True)
 			self.deleteExistingHars()
-			self.browser = Browser("chromedriver/chromedriver", "browsermob-proxy-2.1.4/bin/browsermob-proxy", self.harDirectory, cookies=self.cookies)
+			self.browser = Browser(str(os.getenv('CHROMEDRIVER_PATH'))+'/bin/chromedriver', "browsermob-proxy-2.1.4/bin/browsermob-proxy", self.harDirectory, cookies=self.cookies)
 			if self.searchString is not None:
 				print("Searching URL "+self.url+" for string "+self.searchString)
 			#Move recursively through the site
@@ -53,13 +53,27 @@ class APIFinder:
 		return self.browser.get(url) #load the url in Chrome
 
 	def getDomain(self, url):
-		return urlparse(url).netloc.lstrip('www.')
+		domain = urlparse(url).netloc
+		level_one_domain_match = re.match(r'.*\.([^\.]+\.[^\.]+)',str(domain),re.I)
+		if level_one_domain_match:
+			level_one_domain = level_one_domain_match.group(1)
+		else:
+			level_one_domain = None
+		return level_one_domain
+
+	def getUrlScheme(self, url):
+		return urlparse(url).scheme
 
 	def isInternal(self, url, baseUrl):
-		if url.startswith("/"):
-			return baseUrl+url
-		if self.getDomain(baseUrl) == self.getDomain(url):
+		if url.startswith("http://") or url.startswith("https://"):
 			return url
+		if self.getDomain(baseUrl) == self.getDomain(url):
+			return self.getUrlScheme(baseUrl)+"://"+url.lstrip("/")
+		if self.getDomain(baseUrl) != self.getDomain(url):
+			if url.startswith("/"):
+				return baseUrl+"/"+url.lstrip("/")
+			else:
+				return self.getUrlScheme(baseUrl)+"://"+url
 		return None
 
 
