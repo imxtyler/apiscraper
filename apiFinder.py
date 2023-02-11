@@ -13,6 +13,7 @@ from browser import Browser
 class APIFinder:
 
 	def __init__(self, url=None, harDirectory=None, searchString=None, removeParams=False, count=1, cookies=None):
+		self.start_url = url
 		self.url = url
 		self.harDirectory = harDirectory
 		self.searchString = searchString
@@ -65,17 +66,16 @@ class APIFinder:
 		return urlparse(url).scheme
 
 	def isInternal(self, url, baseUrl):
-		if url.startswith("http://") or url.startswith("https://"):
-			return str(url).replace(" ","")
-		if self.getDomain(baseUrl) == self.getDomain(url):
-			return self.getUrlScheme(baseUrl)+"://"+str(url).replace(" ","").lstrip("/")
-		if self.getDomain(baseUrl) != self.getDomain(url):
-			if url.startswith("/"):
-				return baseUrl+"/"+str(url).replace(" ","").lstrip("/")
+		if self.getDomain(str(baseUrl).replace(" ","")) == self.getDomain(str(url).replace(" ","")):
+			if str(url).replace(" ","").startswith("http://") or str(url).replace(" ","").startswith("https://"):
+				return str(url).replace(" ","")
 			else:
 				return self.getUrlScheme(baseUrl)+"://"+str(url).replace(" ","").lstrip("/")
-		return None
-
+		else:
+			if str(url).replace(" ","").startswith("http://") or str(url).replace(" ","").startswith("https://"):
+				return None
+			else:
+				return str(baseUrl).replace(" ","")+"/"+str(url).replace(" ","").lstrip("/")
 
 	def findInternalURLsInText(self, text, currentUrl, allFoundURLs):
 		newUrls = []
@@ -130,18 +130,21 @@ class APIFinder:
 		#	return apiCalls
 		try:
 			print("Scanning URL: "+url)
-			html = self.openURL(url)
-			if html is not None:
-				bsObj = BeautifulSoup(html, "lxml")
+			if self.isInternal(url, self.start_url): # Add the internal link limit
+				html = self.openURL(url)
+				if html is not None:
+					bsObj = BeautifulSoup(html, "lxml")
 
-				harObj = harParser.getSingleHarFile()
-				apiCalls = harParser.scanHarfile(harObj, apiCalls=apiCalls)
+					harObj = harParser.getSingleHarFile()
+					apiCalls = harParser.scanHarfile(harObj, apiCalls=apiCalls)
 
-				allFoundURLs, newUrls = self.findInternalURLs(bsObj, url, allFoundURLs)
-				shuffle(newUrls)
-				
-				for newUrl in newUrls:
-					self.crawlingScan(newUrl, apiCalls, allFoundURLs)
+					allFoundURLs, newUrls = self.findInternalURLs(bsObj, url, allFoundURLs)
+					shuffle(newUrls)
+
+					for newUrl in newUrls:
+						self.crawlingScan(newUrl, apiCalls, allFoundURLs)
+			else:
+				print("External URL, don't process!")
 		
 		except (KeyboardInterrupt, SystemExit):
 			print("Stopping crawl")
