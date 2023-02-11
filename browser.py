@@ -15,11 +15,12 @@ class Browser:
         self.proxy = self.server.create_proxy()
 
         os.environ["webdriver.chrome.driver"] = chromedriverPath
-        url = urlparse (self.proxy.proxy).path
+        #url = urlparse (self.proxy.proxy).path
         chrome_options = webdriver.ChromeOptions()
         #chrome_options.add_argument('--headless')
         #chrome_options.add_argument('--disable-gpu')
-        #chrome_options.add_argument("--proxy-server={0}".format(url))
+        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument("--proxy-server={0}".format(self.proxy.proxy))
         
         self.driver = webdriver.Chrome(chromedriverPath,chrome_options =chrome_options)
         if cookies:
