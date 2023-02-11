@@ -66,14 +66,14 @@ class APIFinder:
 
 	def isInternal(self, url, baseUrl):
 		if url.startswith("http://") or url.startswith("https://"):
-			return url
+			return str(url).replace(" ","")
 		if self.getDomain(baseUrl) == self.getDomain(url):
-			return self.getUrlScheme(baseUrl)+"://"+url.lstrip(" ").lstrip("/")
+			return self.getUrlScheme(baseUrl)+"://"+str(url).replace(" ","").lstrip("/")
 		if self.getDomain(baseUrl) != self.getDomain(url):
 			if url.startswith("/"):
-				return baseUrl+"/"+url.lstrip("/")
+				return baseUrl+"/"+str(url).replace(" ","").lstrip("/")
 			else:
-				return self.getUrlScheme(baseUrl)+"://"+url.lstrip(" ").lstrip("/")
+				return self.getUrlScheme(baseUrl)+"://"+str(url).replace(" ","").lstrip("/")
 		return None
 
 
