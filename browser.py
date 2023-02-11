@@ -31,7 +31,6 @@ class Browser:
 
     def get(self, url, timeout=20):
         self.proxy.new_har(url, {"captureContent":True})
-        self.server.stop() # Add by Tyler, for opening the url page successfully!
         try:
             self.driver.set_page_load_timeout(timeout)
             self.driver.get(url)
@@ -63,8 +62,7 @@ class Browser:
 
     def close(self):
         try:
-            # self.server.stop()
-            pass
+            self.server.stop()
         except Exception:
             print("Warning: Error stopping server")
             pass
