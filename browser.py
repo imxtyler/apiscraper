@@ -51,7 +51,11 @@ class Browser:
             #time.sleep(9) #wait for the page to load
         except TimeoutException:
             print("Timeout")
-            self.driver.find_element_by_tag_name("body").send_keys(Keys.CONTROL+Keys.ESCAPE)
+            #self.driver.refresh()
+            #shadow = self.driver.execute_script('return document.querySelector(".content").shadowRoot')
+            elem = self.driver.find_elements_by_tag_name("body")
+            if len(elem) > 0:
+                elem[0].send_keys(Keys.CONTROL+Keys.ESCAPE)
 
         try:
             source = self.driver.page_source
