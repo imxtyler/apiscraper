@@ -19,6 +19,7 @@ class Browser:
         chrome_options = webdriver.ChromeOptions()
         #chrome_options.add_argument('--headless')
         #chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--start-maximized')
         chrome_options.add_argument('--ignore-certificate-errors')
         chrome_options.add_argument("--proxy-server={0}".format(self.proxy.proxy))
         
