@@ -4,13 +4,16 @@ import json
 from urllib.parse import urlparse, parse_qs
 import pprint
 from apicall import APICall
+import logging
 
+logger = logging.getLogger()
 class HarParser():
 
     def __init__(self, harPath, searchString=None, removeParams=False):
         self.harPath = harPath
         self.searchString = searchString
-        self.contentTypesRecorded = ["text/html", "application/json", "application/xml"]
+        #self.contentTypesRecorded = ["text/html", "application/json", "application/xml"]
+        self.contentTypesRecorded = ["text/html", "text/xml", "text/plain", "application/javascript", "application/json", "application/xml"]
         self.removeParams = removeParams
 
     def getAllHarFiles(self):
@@ -61,11 +64,13 @@ class HarParser():
             responseSize = entry["response"]["content"]["size"]
 
             content = text
+            if contentType:
+                logger.debug("Mime type is: %s", contentType.lower())
             if contentType is None:
                 return None
-            elif contentType.lower() in self.contentTypesRecorded:
+            elif contentType.lower().split(";")[0] in self.contentTypesRecorded:
                 mimeType = contentType.lower()
-            elif contentType.lower() == "application/gzip":
+            elif contentType.lower().split(";")[0] == "application/gzip":
                 print("GZIP ENTRY:\n"+entry)
             else:
                 return None
