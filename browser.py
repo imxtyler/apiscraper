@@ -8,7 +8,7 @@ import time
 from selenium.common.exceptions import TimeoutException
 class Browser:
 
-    def __init__(self, chromedriverPath, browsermobPath, harfilePath, cookies=None):
+    def __init__(self, chromedriverPath, browsermobPath, harfilePath, cookies=None, cookies_url=None):
         self.harfilePath = harfilePath
         self.server = Server(browsermobPath)
         self.server.start()
@@ -24,6 +24,7 @@ class Browser:
         
         self.driver = webdriver.Chrome(chromedriverPath,chrome_options =chrome_options)
         if cookies:
+            self.driver.get(cookies_url) # Avoid the unknown domain error
             print("Loading cookies from "+str(cookies))
             with open(cookies, 'r') as cookieFile:
                 cookieJson = json.loads(cookieFile.read())
