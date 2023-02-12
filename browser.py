@@ -29,8 +29,9 @@ class Browser:
             print("Loading cookies from "+str(cookies))
             with open(cookies, 'r') as cookieFile:
                 cookieJson = json.loads(cookieFile.read())
-            for cookie in cookieJson:
-                self.driver.add_cookie(cookie)
+            for key, value in cookieJson.items():
+                for cookie in value:
+                    self.driver.add_cookie(cookie)
 
     def get(self, url, timeout=20):
         self.proxy.new_har(url, {"captureContent":True})
