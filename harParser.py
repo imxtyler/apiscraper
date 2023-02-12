@@ -13,7 +13,7 @@ class HarParser():
         self.harPath = harPath
         self.searchString = searchString
         #self.contentTypesRecorded = ["text/html", "application/json", "application/xml"]
-        self.contentTypesRecorded = ["text/html", "text/xml", "text/plain", "application/javascript", "application/json", "application/xml"]
+        self.contentTypesRecorded = ["text/html", "text/xml", "text/plain", "application/json", "application/xml"]
         self.removeParams = removeParams
 
     def getAllHarFiles(self):
