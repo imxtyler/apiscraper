@@ -10,3 +10,4 @@ output.html
 output.json
 server.log
 venv/
+*.png
