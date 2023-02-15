@@ -22,8 +22,19 @@ class Browser:
         chrome_options.add_argument('--start-maximized')
         chrome_options.add_argument('--ignore-certificate-errors')
         chrome_options.add_argument("--proxy-server={0}".format(self.proxy.proxy))
-        
+        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+
         self.driver = webdriver.Chrome(chromedriverPath,chrome_options =chrome_options)
+        with open(os.getenv('HOME')+'/.js/stealth.min.js') as f:
+            js = f.read()
+        self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+            "source": js
+        })
+        self.driver.get('https://bot.sannysoft.com/')
+        time.sleep(5)
+        self.driver.save_screenshot('walkaround.png')
+        
         if cookies:
             self.driver.get(cookies_url) # Avoid the unknown domain error
             print("Loading cookies from "+str(cookies))
