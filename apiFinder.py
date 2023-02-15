@@ -65,8 +65,22 @@ class APIFinder:
 	def getUrlScheme(self, url):
 		return urlparse(url).scheme
 
-	def isInternal(self, url, baseUrl):
+	def isDomainSame(self, url, baseUrl):
 		if self.getDomain(str(baseUrl).replace(" ","")) == self.getDomain(str(url).replace(" ","")):
+			return True
+		else:
+			return False
+
+	def isDomainSimilar(self, url, baseUrl):
+		url_domain_str = self.getDomain(str(url).replace(" ",""))
+		baseUrl_domain_str = self.getDomain(str(baseUrl).replace(" ",""))
+		if url_domain_str and baseUrl_domain_str and url_domain_str.split(".")[0].__contains__(baseUrl_domain_str.split(".")[0]):
+			return True
+		else:
+			return False
+
+	def isInternal(self, url, baseUrl):
+		if self.isDomainSame(url, baseUrl) or self.isDomainSimilar(url, baseUrl):
 			if str(url).replace(" ","").startswith("http://") or str(url).replace(" ","").startswith("https://"):
 				return str(url).replace(" ","")
 			else:
