@@ -86,6 +86,10 @@ class HarParser():
                         params[param['name']].append(param['value'])
                 elif "text" in entry["request"]["postData"]:
                     paramList = entry["request"]["postData"]["text"]
+                    if str(paramList).startswith("["):
+                        params = json.loads('''{'''+'''"'''+'''Payload'''+'''"'''+''':'''+str(paramList)+'''}''')
+                    else:
+                        params = json.loads(str(paramList))
             apiCall = APICall(url, base, urlObj.path, mimeType, method, params, responseSize, content, searchContext=context)
             return apiCall
 
