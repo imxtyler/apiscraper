@@ -89,7 +89,21 @@ class APICall:
 						call.params[key] = vals
 					else:
 						#Add all the values together
-						call.params[key] = list(set(call.params[key] + self.params[key]))
+						if type(call.params[key]) is tuple or type(call.params[key]) is list:
+							if type(self.params[key]) is tuple or type(self.params[key]) is list:
+								for item in list(self.params[key]):
+									list(call.params[key]).append(item)
+							else:
+								for item in str(self.params[key]).split(" ",0):
+									list(call.params[key]).append(item)
+						else:
+							call.params[key] = str(call.params[key]).split(" ",0)
+							if type(self.params[key]) is tuple or type(self.params[key]) is list:
+								for item in list(self.params[key]):
+									call.params[key].append(item)
+							else:
+								for item in str(self.params[key]).split(" ",0):
+									call.params[key].append(item)
 				return apiCalls
 		#Has not been found in the current list, simply append it
 		if removeUnneededParams:
@@ -115,13 +129,24 @@ class APICall:
 			print("|  KEY"+" "*(cellSize-5)+"|  VALUE(S)"+" "*(cellSize-10)+"|")
 			for key, vals in self.params.items():
 				keySpace = cellSize - len(key)
-				if vals[0] == "":
-					print("|"+key+" "*keySpace+"|(blank)        |")
+				if type(vals) is list or type(vals) is tuple:
+					if vals[0] == "":
+						print("|"+key+" "*keySpace+"|(blank)        |")
+					else:
+						valStr = ""
+						for value in vals:
+							valStr = str(value)+","
+						#Remove final comma
+						valStr = valStr[:len(valStr)-1]
+						valLength = len(valStr)
+						while valLength > cellSize:
+							print("|"+" "*cellSize+"|"+valStr[:cellSize]+"|")
+							valStr = valStr[cellSize:]
+							valLength = len(valStr)
+						valSpace = cellSize - valLength
+						print("|"+key+" "*keySpace+"|"+valStr+" "*valSpace+"|")
 				else:
-					valStr = ""
-					for value in vals:
-						valStr = value+","
-					#Remove final comma
+					valStr = str(vals)
 					valStr = valStr[:len(valStr)-1]
 					valLength = len(valStr)
 					while valLength > cellSize:
@@ -129,7 +154,7 @@ class APICall:
 						valStr = valStr[cellSize:]
 						valLength = len(valStr)
 					valSpace = cellSize - valLength
-					print("|"+key+" "*keySpace+"|"+valStr+" "*valSpace+"|")
+					print("|"+key+" "*keySpace+"|"+str(vals)+" "*valSpace+"|")
 				print("--"+"--"*cellSize+"-")
 
 class APICallEncoder(json.JSONEncoder):
