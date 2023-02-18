@@ -6,6 +6,7 @@ import json
 from urllib.parse import urlparse, parse_qs
 import time
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
 class Browser:
 
     def __init__(self, chromedriverPath, browsermobPath, harfilePath, cookies=None, cookies_url=None):
@@ -65,9 +66,10 @@ class Browser:
             print("Timeout")
             #self.driver.refresh()
             #shadow = self.driver.execute_script('return document.querySelector(".content").shadowRoot')
-            elem = self.driver.find_elements_by_tag_name("body")
-            if len(elem) > 0:
-                elem[0].send_keys(Keys.CONTROL+Keys.ESCAPE)
+            self.driver.find_element(by=By.TAG_NAME, value="body").send_keys(Keys.CONTROL+Keys.ESCAPE)
+            #elem = self.driver.find_elements_by_tag_name("body")
+            #if len(elem) > 0:
+            #    elem[0].send_keys(Keys.CONTROL+Keys.ESCAPE)
 
         try:
             source = self.driver.page_source
