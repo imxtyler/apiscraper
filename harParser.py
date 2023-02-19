@@ -78,18 +78,25 @@ class HarParser():
             if method == "GET":
                 params = parse_qs(urlObj.query, keep_blank_values=True)
             elif method == "POST":
-                if "params" in entry["request"]["postData"]:
-                    paramList = entry["request"]["postData"]["params"]
+                if "postData" in entry["request"]:
+                    if "params" in entry["request"]["postData"]:
+                        paramList = entry["request"]["postData"]["params"]
+                        for param in paramList:
+                            if param['name'] not in params:
+                                params[param['name']] = []
+                            params[param['name']].append(param['value'])
+                    elif "text" in entry["request"]["postData"]:
+                        paramList = entry["request"]["postData"]["text"]
+                        if str(paramList).startswith("["):
+                            params = json.loads('''{'''+'''"'''+'''Payload'''+'''"'''+''':'''+str(paramList)+'''}''')
+                        else:
+                            params = json.loads(str(paramList))
+                if "queryString" in entry["request"]:
+                    paramList = entry["request"]["queryString"]
                     for param in paramList:
                         if param['name'] not in params:
                             params[param['name']] = []
                         params[param['name']].append(param['value'])
-                elif "text" in entry["request"]["postData"]:
-                    paramList = entry["request"]["postData"]["text"]
-                    if str(paramList).startswith("["):
-                        params = json.loads('''{'''+'''"'''+'''Payload'''+'''"'''+''':'''+str(paramList)+'''}''')
-                    else:
-                        params = json.loads(str(paramList))
             apiCall = APICall(url, base, urlObj.path, mimeType, method, params, responseSize, content, searchContext=context)
             return apiCall
 
